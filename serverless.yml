@@ -1,0 +1,29 @@
+#org: lucapirrone
+app: template-cognito #TODO
+# NOTE: update this with your service name
+service:
+  name: template-cognito #TODO
+# Create an optimized package for our functions 
+package:
+  individually: true
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin # Load .env as environment variables
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: eu-central-1  #TODO
+  accountId: 123456789 #TODO
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - cognito-idp:*
+      Resource:
+        Fn::GetAtt:
+          - CognitoUserPoolAppUserPool
+          - Arn
+resources:
+  # Cognito
+  - ${file(resources/cognito/cognito-user-pool.yml)}
+  - ${file(resources/cognito/cognito-identity-pool.yml)}

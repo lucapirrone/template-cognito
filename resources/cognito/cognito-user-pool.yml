@@ -1,0 +1,127 @@
+Resources:
+  CognitoUserPoolAppUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      # Generate a name based on the stage
+      UserPoolName: ${self:service.name}-${self:provider.stage}-user-pool
+      # Set email as an alias
+      UsernameAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
+      Schema:
+        - AttributeDataType: String
+          DeveloperOnlyAttribute: true
+          Mutable: false
+          Name: userType
+          Required: false
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false
+          TemporaryPasswordValidityDays: 7
+  CognitoUserPoolAndroidClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      # Generate an app client name based on the stage
+      ClientName: ${self:service.name}-${self:provider.stage}-android-client
+      UserPoolId:
+        Ref: CognitoUserPoolAppUserPool
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_CUSTOM_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      GenerateSecret: false
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - exp://192.168.128.118:19000/--/ #TODO CALLBACK LOGIN PER ANDROID (EXPO)
+      LogoutURLs:
+        - exp://192.168.128.118:19000/--/ #TODO CALLBACK LOGOUT PER ANDROID (EXPO)
+      SupportedIdentityProviders:
+        - COGNITO
+        - Facebook
+        - Google
+  CognitoUserPoolIOSClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      # Generate an app client name based on the stage
+      ClientName: ${self:service.name}-${self:provider.stage}-ios-client
+      UserPoolId:
+        Ref: CognitoUserPoolAppUserPool
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_CUSTOM_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      GenerateSecret: false
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - exp://192.168.128.118:19000/--/ #TODO CALLBACK LOGIN PER IOS (EXPO)
+      LogoutURLs:
+        - exp://192.168.128.118:19000/--/ #TODO CALLBACK LOGOUT PER IOS (EXPO)
+      SupportedIdentityProviders:
+        - COGNITO
+        - Facebook
+        - Google
+  CognitoUserPoolBrowserClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      # Generate an app client name based on the stage
+      ClientName: ${self:service.name}-${self:provider.stage}-browser-client
+      UserPoolId:
+        Ref: CognitoUserPoolAppUserPool
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_CUSTOM_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      GenerateSecret: false
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+        - aws.cognito.signin.user.admin
+      CallbackURLs:
+        - http://localhost:19006/ #TODO CALLBACK LOGIN PER BROWSER
+      LogoutURLs:
+        - http://localhost:19006/ #TODO CALLBACK LOGOUT PER ANDROID (EXPO)
+      SupportedIdentityProviders:
+        - COGNITO
+        - Facebook
+        - Google
+
+# Print out the Id of the User Pool that is created
+Outputs:
+  UserPoolId:
+    Value:
+      Ref: CognitoUserPoolAppUserPool
+  UserPoolClientAndroidId:
+    Value:
+      Ref: CognitoUserPoolAndroidClient
+  UserPoolClientIOSId:
+    Value:
+      Ref: CognitoUserPoolIOSClient
+  UserPoolClientBrowserId:
+    Value:
+      Ref: CognitoUserPoolBrowserClient
