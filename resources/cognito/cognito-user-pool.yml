@@ -25,6 +25,9 @@ Resources:
           TemporaryPasswordValidityDays: 7
   CognitoUserPoolAndroidClient:
     Type: AWS::Cognito::UserPoolClient
+    DependsOn:
+      - UserPoolIdentityProviderFacebook
+      - UserPoolIdentityProviderGoogle
     Properties:
       # Generate an app client name based on the stage
       ClientName: ${self:service.name}-${self:provider.stage}-android-client
@@ -54,6 +57,9 @@ Resources:
         - Google
   CognitoUserPoolIOSClient:
     Type: AWS::Cognito::UserPoolClient
+    DependsOn:
+      - UserPoolIdentityProviderFacebook
+      - UserPoolIdentityProviderGoogle
     Properties:
       # Generate an app client name based on the stage
       ClientName: ${self:service.name}-${self:provider.stage}-ios-client
@@ -83,6 +89,9 @@ Resources:
         - Google
   CognitoUserPoolBrowserClient:
     Type: AWS::Cognito::UserPoolClient
+    DependsOn:
+      - UserPoolIdentityProviderFacebook
+      - UserPoolIdentityProviderGoogle
     Properties:
       # Generate an app client name based on the stage
       ClientName: ${self:service.name}-${self:provider.stage}-browser-client
@@ -110,6 +119,12 @@ Resources:
         - COGNITO
         - Facebook
         - Google
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: template # template .auth.eu-central-1.amazoncognito.com
+      UserPoolId:
+        Ref: CognitoUserPoolAppUserPool
 
 # Print out the Id of the User Pool that is created
 Outputs:
